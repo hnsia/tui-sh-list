@@ -20,6 +20,8 @@ type ShortAnswerField struct {
 // textinput
 func NewShortAnswerField() *ShortAnswerField {
 	ti := textinput.New()
+	ti.Placeholder = "Your answer here"
+	ti.Focus()
 	return &ShortAnswerField{ti}
 }
 
@@ -50,6 +52,8 @@ type LongAnswerField struct {
 // textarea
 func NewLongAnswerField() *LongAnswerField {
 	ta := textarea.New()
+	ta.Placeholder = "Your answer here"
+	ta.Focus()
 	return &LongAnswerField{ta}
 }
 

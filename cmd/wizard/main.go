@@ -1,9 +1,9 @@
 package main
 
 import (
+	"fmt"
 	"log"
 
-	"github.com/charmbracelet/bubbles/textinput"
 	tea "github.com/charmbracelet/bubbletea"
 	"github.com/charmbracelet/lipgloss"
 )
@@ -27,6 +27,7 @@ type model struct {
 	height    int
 	index     int
 	styles    *Styles
+	done      bool
 }
 
 type Question struct {
@@ -55,9 +56,6 @@ func newLongQuestion(question string) Question {
 
 func New(questions []Question) *model {
 	styles := DefaultStyles()
-	answerField := textinput.New()
-	answerField.Placeholder = "Your answer here"
-	answerField.Focus()
 	return &model{
 		questions: questions,
 		styles:    styles,
@@ -80,8 +78,11 @@ func (m model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 		case "ctrl+c":
 			return m, tea.Quit
 		case "enter":
+			if m.index == len(m.questions)-1 {
+				m.done = true
+			}
 			current.answer = current.input.Value()
-			log.Printf("question: %s, answer: %s", current.question, current.answer)
+			// log.Printf("question: %s, answer: %s", current.question, current.answer)
 			m.Next()
 			return m, current.input.Blur
 		}
@@ -92,6 +93,13 @@ func (m model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 
 func (m model) View() string {
 	current := m.questions[m.index]
+	if m.done {
+		var output string
+		for _, q := range m.questions {
+			output += fmt.Sprintf("%s: %s\n", q.question, q.answer)
+		}
+		return output
+	}
 	if m.width == 0 {
 		return "loading..."
 	}
